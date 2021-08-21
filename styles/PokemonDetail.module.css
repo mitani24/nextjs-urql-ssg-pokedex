@@ -1,0 +1,11 @@
+.pokemonInfo {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.evoluationsContainer {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
