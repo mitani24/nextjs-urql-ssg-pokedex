@@ -1,4 +1,4 @@
-import { GetServerSideProps } from "next";
+import { GetStaticProps } from "next";
 import { initUrqlClient, withUrqlClient, WithUrqlState } from "next-urql";
 import { cacheExchange, dedupExchange, fetchExchange, ssrExchange } from "urql";
 import PokemonList from "../components/PokemonList";
@@ -21,26 +21,25 @@ export default withUrqlClient(() => ({
   url: "https://graphql-pokemon2.vercel.app/",
 }))(Home);
 
-export const getServerSideProps: GetServerSideProps<WithUrqlState> =
-  async () => {
-    const ssrCache = ssrExchange({ isClient: process.browser });
-    const client = initUrqlClient(
-      {
-        url: "https://graphql-pokemon2.vercel.app/",
-        exchanges: [dedupExchange, cacheExchange, ssrCache, fetchExchange],
-      },
-      false
-    );
+export const getStaticProps: GetStaticProps<WithUrqlState> = async () => {
+  const ssrCache = ssrExchange({ isClient: process.browser });
+  const client = initUrqlClient(
+    {
+      url: "https://graphql-pokemon2.vercel.app/",
+      exchanges: [dedupExchange, cacheExchange, ssrCache, fetchExchange],
+    },
+    false
+  );
 
-    await client
-      ?.query<PokemonsResponse, PokemonsVariables>(PokemonsDocument, {
-        pokemonsFirst: 151,
-      })
-      .toPromise();
+  await client
+    ?.query<PokemonsResponse, PokemonsVariables>(PokemonsDocument, {
+      pokemonsFirst: 151,
+    })
+    .toPromise();
 
-    return {
-      props: {
-        urqlState: ssrCache.extractData(),
-      },
-    };
+  return {
+    props: {
+      urqlState: ssrCache.extractData(),
+    },
   };
+};
